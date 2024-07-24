@@ -4,8 +4,7 @@ pub mod types;
 
 use std::{collections::HashMap, mem, str::FromStr};
 
-use alloy_dyn_abi::{DynSolType, DynSolValue, FunctionExt, JsonAbiExt, ResolveSolType};
-use alloy_json_abi::Function;
+use alloy_dyn_abi::{DynSolType, DynSolValue, FunctionExt, JsonAbiExt};use alloy_json_abi::Function;
 use alloy_primitives::{hex, Address, U256};
 use anyhow::{anyhow, Result};
 use types::*;
@@ -44,6 +43,7 @@ impl Abi {
     }
 
     pub fn decode_input(&mut self, sig: &str, input: &str) -> Result<Vec<DecodedArg>> {
+        use alloy_dyn_abi::Specifier;
         let func = Function::parse(sig)?;
         let calldata = hex::decode(input)?;
         let tokens = func.abi_decode_input(&calldata[4..], false)?;
@@ -58,6 +58,7 @@ impl Abi {
     }
 
     pub fn decode_output(&mut self, ret_sig: &str, output: &str) -> Result<Vec<DecodedArg>> {
+        use alloy_dyn_abi::Specifier;
         let sig = format!("anonymous()({})", ret_sig.trim_start_matches('(').trim_end_matches(')'));
         let func = Function::parse(&sig)?;
         let output = hex::decode(output)?;
@@ -100,6 +101,7 @@ impl Abi {
     /// The fn signature to define a function.
     /// Replace tuples with structs, and handle memory types.
     pub fn get_fn_def_signature(&self, fn_sig: &str, struct_defs: &HashMap<String, StructDef>) -> Result<String> {
+        use alloy_dyn_abi::Specifier;
         let func = Function::parse(fn_sig)?;
         let fn_name = func.name;
         let mut params = vec![];
@@ -114,6 +116,7 @@ impl Abi {
     /// The return signature to define a function.
     /// Replace tuples with structs, and handle memory types.
     pub fn get_ret_def_signature(&self, ret_sig: &str, struct_defs: &HashMap<String, StructDef>) -> Result<String> {
+        use alloy_dyn_abi::Specifier;
         let fn_sig = format!("anonymous()({})", ret_sig.trim_start_matches('(').trim_end_matches(')'));
         let func = Function::parse(&fn_sig)?;
         let mut rets = vec![];
